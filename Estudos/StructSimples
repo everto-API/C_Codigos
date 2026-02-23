@@ -1,0 +1,27 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+int main() {
+    
+    typedef struct {
+        char Nome[50];
+        int Idade;
+        int NumMatricula;
+    } Campo;
+    
+    Campo aluno;
+    char Aux[50];
+    int NumAux = rand();
+    printf("Digite o nome do aluno:\n> ");
+    scanf("%[^\n]s", Aux);
+    strcpy(aluno.Nome, Aux);
+    printf("Digite a idade do aluno:\n> ");
+    scanf(" %d", &aluno.Idade);
+    aluno.NumMatricula = NumAux;
+    
+    printf("\n===== Dados da Matrícula Nº%d =====\n", NumAux);
+    printf("Nome: %s\n", aluno.Nome);
+    printf("Idade: %d\n", aluno.Idade);
+    printf("Nº de matrícula: %d", aluno.NumMatricula);
+}
