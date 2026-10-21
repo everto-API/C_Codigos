@@ -1,0 +1,32 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(char **argv){
+    int i, j, k;
+    unsigned char cmax = 255;
+    FILE *arquivo;
+    int altura = 30, largura = 30;
+    int g[largura][altura][3];
+
+    int A[2] = {2, 2};
+    int B[2] = {1, 7};
+    int y[2] = {B[1] - A[1], B[2] - A[2]};  // vetorDiretor
+    int x[2] = {A[2] - B[2], B[1] - A[1]};  // vetorPerpendicular
+
+
+    for (i = 0; i < largura; i++)
+        for (j = 0; j < altura; j++){
+            if ()
+        }
+
+    arquivo = fopen("igor.ppm", "w");
+    
+    fprintf(arquivo, "P3\n");
+    fprintf(arquivo, "%u %u\n%hhu\n", largura, altura, cmax);
+
+    for (i = 0; i < largura; i++)
+        for (j = 0; j < altura; j++)
+            for (k = 0; k < 3; k++)
+                fprintf(arquivo, "%hhu ", g[i][j][k]);
+    fclose(arquivo);
+}
