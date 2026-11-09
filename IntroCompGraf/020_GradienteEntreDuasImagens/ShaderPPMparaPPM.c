@@ -1,14 +1,6 @@
-//------------------------
-// Universidade Federal de Sergipe
-// Departamento de Matemática
-// Biblioteta simples para o curso de Introdução à Computação Gráfica
-// Para converter imagens ppm para pgm
-// Sintaxe: ./ppmtopgm image.ppm image.pgm
-// Prof Evilson Vieira
-// Aracaju-SE 06/12/2023
-//------------------------
 #include <stdio.h>
 #include <stdlib.h>
+
 void main(int argc, char **argv){
   int i, j, l, h, canal;
   float fatorT;
@@ -95,8 +87,7 @@ void main(int argc, char **argv){
 
       for (canal = 0; canal < 3; canal++) {
         valor = (unsigned char)(
-          fatorT * imagemA[i][j][canal] +
-          (1.0f - fatorT) * imagemB[i][j][canal]
+          fatorT * imagemA[i][j][canal] + (1.0f - fatorT) * imagemB[i][j][canal]
         );
         fprintf(fp, "%hhu ", valor);
       }
