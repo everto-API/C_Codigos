@@ -52,7 +52,7 @@ int main(int argc, char **argv){
             for (k = 0; k < 3; k++)
                 imagemNOVA[i+centroX][j+centroY][k] = g[i][j][k];
     
-    arquivo = fopen("imagemMoldurada.ppm", "w");
+    arquivo = fopen("imagemExpandida.ppm", "w");
     
     fprintf(arquivo, "P3\n");
     fprintf(arquivo, "%u %u\n%hhu\n", novaL, novaA, cmax);
