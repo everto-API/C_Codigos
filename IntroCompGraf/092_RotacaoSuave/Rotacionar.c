@@ -3,8 +3,8 @@
 #include <math.h>
 
 int main(int argc, char **argv){
-    int i, j, k, altura, largura, novaA, novaL, novoI, novoJ, centroX, centroY;
-    double rad, c, s, xNOVO, yNOVO, ci, cj, iCentrado, jCentrado;
+    int i, j, k, altura, largura, novaA, novaL, novoI, novoJ, centroX, centroY, ci, cj;
+    double rad, c, s, xNOVO, yNOVO, iCentrado, jCentrado;
     unsigned char cmax = 255, caractere, type;
     FILE *arquivo;
 
@@ -59,15 +59,18 @@ int main(int argc, char **argv){
             for (k = 0; k < 3; k++)
                 imagemNOVA[i][j][k] = 255;
     
-    for (i = 0; i < altura; i++)
-        for (j = 0; j < largura; j++)
-            for (k = 0; k < 3; k++) {
-                iCentrado = i - ci;
-                jCentrado = j - cj;
+    for (i = 0; i < novaA; i++)
+        for (j = 0; j < novaL; j++) {
+
+            iCentrado = i - centroX;
+            jCentrado = j - centroY;
                 
-                novoI = round(iCentrado * c - jCentrado * s);
-                novoJ = round(iCentrado * s + jCentrado * c);
-                imagemNOVA[novoI + centroX][novoJ + centroY][k] = g[i][j][k];}
+            novoI = round(iCentrado * c + jCentrado * s) + ci;
+            novoJ = round(-iCentrado * s + jCentrado * c) + cj;
+            
+            if (novoI >= 0 && novoI < altura && novoJ >= 0 && novoJ < largura)
+                for (k = 0; k < 3; k++)
+                    imagemNOVA[i][j][k] = g[novoI][novoJ][k];}
     
     arquivo = fopen("imagemRotacionada.ppm", "w");
     
