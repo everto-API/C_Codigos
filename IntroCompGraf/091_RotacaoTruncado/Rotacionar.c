@@ -3,8 +3,8 @@
 #include <math.h>
 
 int main(int argc, char **argv){
-    int i, j, k, altura, largura, novaA, novaL, centroX, centroY;
-    double rad, c, s, xNOVO, yNOVO;
+    int i, j, k, altura, largura, novaA, novaL, novoI, novoJ, centroX, centroY;
+    double rad, c, s, xNOVO, yNOVO, ci, cj, iCentrado, jCentrado;
     unsigned char cmax = 255, caractere, type;
     FILE *arquivo;
 
@@ -45,9 +45,11 @@ int main(int argc, char **argv){
     novaL = largura*2;
     int imagemNOVA[novaA][novaL][3];
     
-    centroX = (novaA - altura) / 2;
-    centroY = (novaL - largura) / 2;
-    
+    centroX = novaA / 2.0;
+    centroY = novaL / 2.0;
+    ci      = altura / 2.0;
+    cj      = largura / 2.0;
+
     rad = 30 * M_PI / 180;
     c = cos(rad);
     s = sin(rad);
@@ -59,9 +61,13 @@ int main(int argc, char **argv){
     
     for (i = 0; i < altura; i++)
         for (j = 0; j < largura; j++)
-
-            for (k = 0; k < 3; k++)
-                imagemNOVA[i+centroX][j+centroY][k] = g[i][j][k];
+            for (k = 0; k < 3; k++) {
+                iCentrado = i - ci;
+                jCentrado = j - cj;
+                
+                novoI = round(iCentrado * c - jCentrado * s);
+                novoJ = round(iCentrado * s + jCentrado * c);
+                imagemNOVA[novoI + centroX][novoJ + centroY][k] = g[i][j][k];}
     
     arquivo = fopen("imagemRotacionada.ppm", "w");
     
