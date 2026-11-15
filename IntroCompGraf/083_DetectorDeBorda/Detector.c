@@ -2,11 +2,10 @@
 #include <stdlib.h>
 
 int main(int argc, char **argv){
-    int i, j, k, altura, largura, filtro;
+    int i, j, altura, largura, filtro;
     unsigned char cmax = 255, caractere, type;
     FILE *arquivo;
-    
-    // Bloco do professor
+
     arquivo = fopen(argv[1], "r");
     while ((caractere = getc(arquivo)) == '#')
         while((caractere = getc(arquivo)) != '\n');
@@ -18,96 +17,82 @@ int main(int argc, char **argv){
     ungetc(caractere, arquivo);
   
     fscanf(arquivo, "%u %u\n%hhu\n", &largura, &altura, &cmax);
-    unsigned char g[altura][largura][3];
-    
-    if(type == 3){
-    for(i = 0; i < altura; i++)
-      for(j = 0; j < largura; j++)
-        fscanf(arquivo, "%hhu %hhu %hhu", &g[i][j][0],&g[i][j][1],&g[i][j][2]);
-    fclose(arquivo);
-    
-    } else if(type == 6){
-        for(i = 0; i < altura; i++)
-            for(j = 0; j < largura; j++)
-                fscanf(arquivo, "%c%c%c", &g[i][j][0],&g[i][j][1],&g[i][j][2]);
-        fclose(arquivo);
-    } else{
-        printf("Formato inválido!");
-        fclose(arquivo);
-        exit(0);}
-    
-    arquivo = fopen(argv[1], "r");
-    while ((caractere = getc(arquivo)) == '#')
-        while((caractere = getc(arquivo)) != '\n');
-    ungetc(caractere, arquivo);
 
-    fscanf(arquivo, "P%hhu\n", &type);
-    while ((caractere = getc(arquivo)) == '#')
-        while((caractere = getc(arquivo)) != '\n');
-    ungetc(caractere, arquivo);
-  
-    fscanf(arquivo, "%u %u\n%hhu\n", &largura, &altura, &cmax);
-    unsigned char h[altura][largura][3];
+    // Aparentemente o código envolvia muitas matrizes, daí da forma commum de se escrever a matriz
+    // unsigned char g[largura][altura][3] ocupava muito espaço na memória; O ideal seria dessa forma usando o malloc
+    unsigned char (*g)[largura] = malloc(altura * sizeof(*g));;
     
-    if(type == 3){
+    if(type == 2){
     for(i = 0; i < altura; i++)
       for(j = 0; j < largura; j++)
-        fscanf(arquivo, "%hhu %hhu %hhu", &h[i][j][0],&h[i][j][1],&h[i][j][2]);
+        fscanf(arquivo, "%hhu", &g[i][j]);
     fclose(arquivo);
-    
-    } else if(type == 6){
-        for(i = 0; i < altura; i++)
-            for(j = 0; j < largura; j++)
-                fscanf(arquivo, "%c%c%c", &h[i][j][0],&h[i][j][1],&h[i][j][2]);
-        fclose(arquivo);
     } else{
         printf("Formato inválido!");
         fclose(arquivo);
         exit(0);}
     
-    // Bloco de detecção
-    int imagemNOVA[altura+2][largura+2][3];
+    // A mesma coisa na hora de alocar as matrizes ORIGEM e NOVA, doideira isso daé
+    int (*imagemORIGEM)[largura+2] = malloc((altura+2) * sizeof(*imagemORIGEM));
+    int (*imagemNOVA)[largura+2]   = malloc((altura+2) * sizeof(*imagemNOVA));
     
     for (i = 0; i < altura+2; i++)
-        for (j = 0; j < largura+2; j++)
-            for (k = 0; k < 3; k++)
-                imagemNOVA[i][j][k] = 255;
+        for (j = 0; j < largura+2; j++){
+                imagemORIGEM[i][j] = 255;
+                imagemNOVA[i][j] = 255;}
     
     for (i = 0; i < altura; i++)
         for (j = 0; j < largura; j++)
-            for (k = 0; k < 3; k++)
-                imagemNOVA[i+1][j+1][k] = g[i][j][k];
+                imagemORIGEM[i+1][j+1] = g[i][j];
     
-    for (i = 1; i <= altura; i++)
-        for (j = 1; j <= largura; j++)
-            for (k = 0; k < 3; k++) {
-                filtro = (imagemNOVA[i-1][j-1][k] + imagemNOVA[i][j-1][k] + imagemNOVA[i+1][j-1][k] + imagemNOVA[i-1][j][k] + imagemNOVA[i][j][k] + imagemNOVA[i+1][j][k] + imagemNOVA[i-1][j+1][k] + imagemNOVA[i][j+1][k] + imagemNOVA[i+1][j+1][k]) / 9;
-                imagemNOVA[i-1][j-1][k] = filtro;
-                imagemNOVA[i][j-1][k]   = filtro;
-                imagemNOVA[i+1][j-1][k] = filtro;
-                imagemNOVA[i-1][j][k]   = filtro;
-                imagemNOVA[i][j][k]     = filtro;
-                imagemNOVA[i+1][j][k]   = filtro;
-                imagemNOVA[i-1][j+1][k] = filtro;
-                imagemNOVA[i][j+1][k]   = filtro;
-                imagemNOVA[i+1][j+1][k] = filtro;}
+    // Bloco para cobrir a moldura branca da imagem expandida
+    // Cantos
+    imagemORIGEM[0][0]                = g[0][0];
+    imagemORIGEM[0][largura+1]        = g[0][largura-1];
+    imagemORIGEM[altura+1][0]         = g[altura-1][0];
+    imagemORIGEM[altura+1][largura+1] = g[altura-1][largura-1];
     
-    int BordaDetectada[altura+2][largura+2][3];
-    for (i = 1; i <= altura; i++)
-        for (j = 1; j <= largura; j++)
-            for (k = 0; k < 3; k++)
-                BordaDetectada[i][j][k] = imagemNOVA[i][j][k] - h[i][j][k];
-    
-    
-    
-    arquivo = fopen("BordaDetectada.ppm", "w");
-    
-    fprintf(arquivo, "P3\n");
-    fprintf(arquivo, "%u %u\n%hhu\n", largura+2, altura+2, cmax);
+    // Bordas horizontais
+    for (j = 0; j < largura; j++){
+            imagemORIGEM[0][j+1]        = g[0][j];
+            imagemORIGEM[altura+1][j+1] = g[altura-1][j];}
 
-    for (i = 0; i < altura+2; i++)
-        for (j = 0; j < largura+2; j++)
-            for (k = 0; k < 3; k++)
-                fprintf(arquivo, "%hhu ", BordaDetectada[i][j][k]);
+    // Bordas verticais
+    for (i = 0; i < altura; i++){
+            imagemORIGEM[i+1][0]        = g[i][0];
+            imagemORIGEM[i+1][largura+1] = g[i][largura-1];}
+    
+    // Etapa do borrão
+    for (i = 1; i <= altura; i++)
+        for (j = 1; j <= largura; j++){
+                filtro = (imagemORIGEM[i-1][j-1] + imagemORIGEM[i][j-1] + imagemORIGEM[i+1][j-1] + 
+                          imagemORIGEM[i-1][j]   + imagemORIGEM[i][j]   + imagemORIGEM[i+1][j]   + 
+                          imagemORIGEM[i-1][j+1] + imagemORIGEM[i][j+1] + imagemORIGEM[i+1][j+1]) / 9;
+                imagemNOVA[i][j]     = filtro;}
+    
+    unsigned char (*imagemBORDA)[largura] = malloc(altura * sizeof(*imagemBORDA));
+
+    for (i = 1; i <= altura; i++)
+        for (j = 1; j <= largura; j++) {
+            int diferenca = imagemORIGEM[i][j] - imagemNOVA[i][j];
+
+            if (diferenca < 0) diferenca = -diferenca; // Def de absoluto
+
+            diferenca = diferenca * 10;
+            if (diferenca > 255) diferenca = 255;
+            imagemBORDA[i-1][j-1] = (unsigned char)diferenca;}
+    
+    arquivo = fopen("imagemDetectada.pgm", "w");
+    
+    fprintf(arquivo, "P2\n");
+    fprintf(arquivo, "%u %u\n%hhu\n", largura, altura, cmax);
+
+    for (i = 0; i < altura; i++)
+        for (j = 0; j < largura; j++)
+            fprintf(arquivo, "%hhu ", imagemBORDA[i][j]);
     fclose(arquivo);
-}
+
+    free(g);
+    free(imagemORIGEM);
+    free(imagemNOVA);
+    free(imagemBORDA);}
