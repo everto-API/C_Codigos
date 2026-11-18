@@ -100,7 +100,7 @@ int main(int argc, char **argv){
                     imagemNOVA[i][j][k] = g[yi][xi][k];
         }
     
-    arquivo = fopen("imagemExpandida.ppm", "w");
+    arquivo = fopen("imagemTransformada.ppm", "w");
     
     fprintf(arquivo, "P3\n");
     fprintf(arquivo, "%u %u\n%hhu\n", novaL, novaA, cmax);
